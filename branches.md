@@ -17,3 +17,14 @@
   - There are reversions to the readme that can't be found elsewhere,
     so the actual version it was based on is lost
     (must have been a version between 2007-08-03 and 2007-08-09).
+
+### Further info on repak
+The following was in the old 1.Notes.txt file of qjak.zip with the
+files dated 2007-08-09 (2.2) which had all files inside of a folder
+named "qjak - click Extract All then double click setup":
+
+> 2012-02-19
+> - [x] (setup.bat) make installer delete then generate qjak.ini
+> - [x] (setup.bat) fix issue where smbreak.ico was not installed
+> - [x] fix pif files to use %HOMEPATH%\Desktop\qjak\bin
+> - [x] (setup.bat) install to %HOMEPATH%\Desktop\qjak\bin
