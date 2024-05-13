@@ -1,4 +1,4 @@
-'menu for Qjak Entertainment Pak 2.1
+'menu for Qjak Entertainment Pak 2.2
 DECLARE SUB help ()
 DECLARE SUB getSpheroid ()
 DECLARE SUB getJaksound ()
@@ -16,18 +16,27 @@ DIM SHARED pJakSound(1 TO 1716)
 DIM SHARED pSpheroid(1 TO 1716)
 DIM SHARED sph$(1 TO 8)
 DIM exitr$(0 TO 22)
-COMMON SHARED progdir$
-progdir$ = "c:\qjak"
+OPEN "qjak.ini" FOR INPUT AS #1
+          LINE INPUT #1, progdir$
+CLOSE
+FOR charnow = 1 TO LEN(progdir$)
+        IF MID$(progdir$, charnow, 1) = "=" THEN GOTO SPLITHERE
+NEXT charnow
+SPLITHERE:
+progdir$ = RIGHT$(progdir$, LEN(progdir$) - (charnow))  'this is correct since STARTS at right
+CLS
+SCREEN 13
+LOCATE 1, 1
+PRINT progdir$
 CHDIR (progdir$)
 selGame = 1
 
 'check sound setting
-OPEN "quiet.jak" FOR INPUT AS #1
+OPEN "bsound.dat" FOR INPUT AS #1
           LINE INPUT #1, sound$
 CLOSE
 
 CLS
-SCREEN 13
 getJakDraw
 CLS
 getJaksound
@@ -43,7 +52,7 @@ drawJakDraw
 Rings
 LOCATE 2, 7
 COLOR 32
-PRINT "QJak  Entertainment Pack 2.1"
+PRINT "QJak  Entertainment Pack 2.2"
 refmenu
 drawJaksound
 drawSpheroid
@@ -85,8 +94,8 @@ LOCATE 12, 14
 
 FOR i = 0 TO 12
      SELECT CASE sound$
-          CASE "1": SOUND 20000, .5
-          CASE "2": SOUND 100 + 7 * i, .5
+          CASE "0": SOUND 20000, .5
+          CASE "1": SOUND 100 + 7 * i, .5
      END SELECT
      COLOR i + 32
      PRINT exitr$(i);

@@ -11,10 +11,17 @@ DIM SHARED tone
 DIM SHARED menuitem$(1 TO 3)
 DIM SHARED seltext AS INTEGER
 DIM SHARED sound$
-COMMON SHARED progdir$
+OPEN "qjak.ini" FOR INPUT AS #1
+          LINE INPUT #1, progdir$
+CLOSE
+FOR charnow = 1 TO LEN(progdir$)
+        IF MID$(progdir$, charnow, 1) = "=" THEN GOTO SPLITHERE
+NEXT charnow
+SPLITHERE:
+progdir$ = RIGHT$(progdir$, LEN(progdir$) - (charnow))  'this is correct since STARTS at right
 CHDIR (progdir$)
 
-OPEN "quiet.jak" FOR INPUT AS #1
+OPEN "bsound.dat" FOR INPUT AS #1
           LINE INPUT #1, sound$
 CLOSE
 
@@ -49,8 +56,8 @@ END SUB
 
 SUB delaye
 SELECT CASE sound$
-     CASE "2": SOUND tone, .4
-     CASE "1": SOUND 20000, .4
+     CASE "1": SOUND tone, .4
+     CASE "0": SOUND 20000, .4
 END SELECT
 tone = tone + colour
 
@@ -84,7 +91,7 @@ FOR i = 1 TO 30
      currentbomby = INT((RND * 199) + 1)
      FOR radius = 1 TO 3
           SELECT CASE sound$
-               CASE "2": SOUND 60 + (radius * 3), .3
+               CASE "1": SOUND 60 + (radius * 3), .3
                CASE ELSE: SOUND 20000, .3
           END SELECT
           CIRCLE (currentbombx, currentbomby), radius, 4
@@ -138,10 +145,10 @@ END SUB
 
 SUB switchsound
 
-OPEN "quiet.jak" FOR OUTPUT AS #1
+OPEN "bsound.dat" FOR OUTPUT AS #1
      SELECT CASE sound$
-          CASE "1": PRINT #1, "2": sound$ = "2"
-          CASE "2": PRINT #1, "1": sound$ = "1"
+          CASE "0": PRINT #1, "1": sound$ = "1"
+          CASE "1": PRINT #1, "0": sound$ = "0"
      END SELECT
 CLOSE
 END SUB

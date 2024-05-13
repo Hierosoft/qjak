@@ -25,10 +25,17 @@ DIM SHARED dirc$
 DIM SHARED sound$
 DIM SHARED exable%
 DIM SHARED watime AS LONG
-COMMON SHARED progdir$
+OPEN "qjak.ini" FOR INPUT AS #1
+          LINE INPUT #1, progdir$
+CLOSE
+FOR charnow = 1 TO LEN(progdir$)
+        IF MID$(progdir$, charnow, 1) = "=" THEN GOTO SPLITHERE
+NEXT charnow
+SPLITHERE:
+progdir$ = RIGHT$(progdir$, LEN(progdir$) - (charnow))  'this is correct since STARTS at right
 CHDIR (progdir$)
 
-OPEN "quiet.jak" FOR INPUT AS #1
+OPEN "bsound.dat" FOR INPUT AS #1
           LINE INPUT #1, sound$
 CLOSE
 
@@ -123,8 +130,8 @@ SUB explode
 colour = 40
 FOR i = 1 TO 20
      SELECT CASE sound$
-          CASE "2": SOUND 100 - i, .3
-          CASE "1": SOUND 24000, .3
+          CASE "1": SOUND 100 - i, .3
+          CASE "0": SOUND 24000, .3
      END SELECT
     CIRCLE (xguy, yguy), i, INT(colour)
     colour = colour + .2
@@ -132,8 +139,8 @@ NEXT i
 'erase explosion
 FOR i = 20 TO 1 STEP -1
      SELECT CASE sound$
-          CASE "2": SOUND 80 - i, .3
-          CASE "1": SOUND 24000, .3
+          CASE "1": SOUND 80 - i, .3
+          CASE "0": SOUND 24000, .3
      END SELECT
     CIRCLE (xguy, yguy), i, 16   'color 16 is black
 NEXT i
@@ -147,8 +154,8 @@ IF (lives < 1) THEN
    LOCATE 10, 15
    PRINT "YOU LOSE"
      SELECT CASE sound$
-          CASE "2": SOUND 80, 10:  SOUND 60, 15
-          CASE "1": SOUND 24000, 10:  SOUND 20000, 15
+          CASE "1": SOUND 80, 10:  SOUND 60, 15
+          CASE "0": SOUND 24000, 10:  SOUND 20000, 15
      END SELECT
      COLOR 15
      i = 0
@@ -175,8 +182,8 @@ NEXT bomnum
 FOR i = 1 TO 20
     FOR radius = 1 TO 3
      SELECT CASE sound$
-          CASE "2": SOUND 60 + (radius * 3), .3
-          CASE "1": SOUND 20000, .3
+          CASE "1": SOUND 60 + (radius * 3), .3
+          CASE "0": SOUND 20000, .3
      END SELECT
        
        CIRCLE (xbomb(i), ybomb(i)), radius, 4
@@ -224,16 +231,16 @@ FOR locbomb = 1 TO 20
        LINE (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 4
        FOR i = 1 TO 20
           SELECT CASE sound$
-               CASE "2": SOUND 100 + i, .3
-               CASE "1": SOUND 24000, .3
+               CASE "1": SOUND 100 + i, .3
+               CASE "0": SOUND 24000, .3
           END SELECT
        NEXT i
        LINE (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 16
        FOR i = 1 TO 20
            CIRCLE (xbomb(locbomb), ybomb(locbomb)), i, 4
            SELECT CASE sound$
-               CASE "2": SOUND 100 + i, .3
-               CASE "1": SOUND 24000, .3
+               CASE "1": SOUND 100 + i, .3
+               CASE "0": SOUND 24000, .3
            END SELECT
            
        NEXT i
@@ -241,8 +248,8 @@ FOR locbomb = 1 TO 20
        FOR i = 20 TO 1 STEP -1
            CIRCLE (xbomb(locbomb), ybomb(locbomb)), i, 16
            SELECT CASE sound$
-               CASE "2": SOUND 110 - i, .3
-               CASE "1": SOUND 24000, .3
+               CASE "1": SOUND 110 - i, .3
+               CASE "0": SOUND 24000, .3
            END SELECT
        NEXT i
        xbomb(locbomb) = -10
@@ -257,8 +264,8 @@ END SUB
 
 SUB slide
 SELECT CASE sound$
-     CASE "2": SOUND 40, .3
-     CASE "1": SOUND 20000, .3
+     CASE "1": SOUND 40, .3
+     CASE "0": SOUND 20000, .3
 END SELECT
 
 checkbomb
@@ -276,10 +283,10 @@ END SUB
 
 SUB switchsound
 
-OPEN "quiet.jak" FOR OUTPUT AS #1
+OPEN "bsound.dat" FOR OUTPUT AS #1
      SELECT CASE sound$
-          CASE "1": PRINT #1, "2": sound$ = "2"
-          CASE "2": PRINT #1, "1": sound$ = "1"
+          CASE "0": PRINT #1, "1": sound$ = "1"
+          CASE "1": PRINT #1, "0": sound$ = "0"
      END SELECT
 CLOSE
 
@@ -302,8 +309,8 @@ soundpitch = 830
 
 FOR k = 0 TO 20
      SELECT CASE sound$
-          CASE "2": SOUND soundpitch, .2
-          CASE "1": SOUND 24000, .2
+          CASE "1": SOUND soundpitch, .2
+          CASE "0": SOUND 24000, .2
      END SELECT
     soundpitch = soundpitch + k
 NEXT k
