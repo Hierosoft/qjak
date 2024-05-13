@@ -28,7 +28,7 @@ DIM SHARED watime AS LONG
 COMMON SHARED progdir$
 CHDIR (progdir$)
 
-OPEN "quiet.txt" FOR INPUT AS #1
+OPEN "quiet.jak" FOR INPUT AS #1
           LINE INPUT #1, sound$
 CLOSE
 
@@ -276,7 +276,7 @@ END SUB
 
 SUB switchsound
 
-OPEN "quiet.txt" FOR OUTPUT AS #1
+OPEN "quiet.jak" FOR OUTPUT AS #1
      SELECT CASE sound$
           CASE "1": PRINT #1, "2": sound$ = "2"
           CASE "2": PRINT #1, "1": sound$ = "1"

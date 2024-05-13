@@ -1,4 +1,4 @@
-Qjak Entertainment Pack 2.1
+Qjak Entertainment Pack 2.2-20070803
 '1. All credit for making this program goes to Jake Gustafson.
 '2. Use subs for implementations but give credit to author Jake Gustafson.
 '3. DO NOT copy or distribute for commercial purpose

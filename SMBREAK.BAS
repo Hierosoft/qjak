@@ -77,7 +77,7 @@ drawback
 COLOR 15
 setL1
 RedrawAll:
-IF helped = 1 THEN : helped = 0: drawback
+IF helped = 1 THEN : helped = 0 : drawback
 drawpanel
 drawblocksfast
 CALL movePad(0)
@@ -104,7 +104,15 @@ LOOP
 deadend:
 LOCATE 20, 4: COLOR 4: PRINT "You died."
 IF (soundON = 1) THEN
-   SOUND 800, 3: SOUND 700, 3: SOUND 600, 3: SOUND 700, 3: SOUND 600, 3: SOUND 500, 3: SOUND 600, 3: SOUND 500, 3: SOUND 400, 6
+   SOUND 800, 3
+   SOUND 700, 3
+   SOUND 600, 3
+   SOUND 700, 3
+   SOUND 600, 3
+   SOUND 500, 3
+   SOUND 600, 3
+   SOUND 500, 3
+   SOUND 400, 6
 ELSE
    SOUND 30000, 21
 END IF

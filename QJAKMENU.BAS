@@ -22,7 +22,7 @@ CHDIR (progdir$)
 selGame = 1
 
 'check sound setting
-OPEN "quiet.txt" FOR INPUT AS #1
+OPEN "quiet.jak" FOR INPUT AS #1
           LINE INPUT #1, sound$
 CLOSE
 

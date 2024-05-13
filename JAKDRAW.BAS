@@ -71,7 +71,7 @@ DIM SHARED tipnum%
 qt$ = CHR$(34)
 
 'Check sound setting
-OPEN "quiet.txt" FOR INPUT AS #2
+OPEN "quiet.jak" FOR INPUT AS #2
           LINE INPUT #2, sound$
 CLOSE #2
 
@@ -961,7 +961,7 @@ END SUB
 
 SUB SwitchSound
 
-OPEN "quiet.txt" FOR OUTPUT AS #1
+OPEN "quiet.jak" FOR OUTPUT AS #1
      SELECT CASE sound$
           CASE "1": PRINT #1, "2": sound$ = "2"
           CASE "2": PRINT #1, "1": sound$ = "1"
