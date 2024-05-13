@@ -27,22 +27,22 @@ Only known program bug:
 
 File Count: 18 files including this readme file.
 File List:
-1.  256block.bas           version 2.2
+1.  256block.bas			version 2.2
 2.  Check.did
-3.  Jakdraw.bas            version 2.7
-4.  Jaksound.bas           version 2.4
-5.  QBasic.exe             version 1.1
-6.  QBasic.hlp             version 1.1
+3.  Jakdraw.bas			version 2.7
+4.  Jaksound.bas			version 2.4
+5.  QBasic.exe			version 1.1
+6.  QBasic.hlp			version 1.1
 7.  Qjak Menu.pif
 8.  Qjak.grp
-9.  Qjak.ico               version 2.0
-10. Qjakmenu.bas           version 2.0
+9.  Qjak.ico			version 2.0
+10. Qjakmenu.bas			version 2.0
 11. Quiet.jak
 12. Readme Qjak.txt
-13. SMBreak.bas            version 1.0
+13. SMBreak.bas 			version 1.0
 14. SMBreak.ico
-15. Spheroid.bas           version 2.0
-16. Sphmenu.bas            version 2.1
+15. Spheroid.bas			version 2.0
+16. Sphmenu.bas			version 2.1
 17. Super Mega Break.pif
 INSTALL FILES:
 18. Setup.bat
