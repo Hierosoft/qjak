@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [unreleased] - 2007-08-11
+(redacted 2024-05-12: Undo reversions of improved setup and readme.)
+### Added
+- PrintLit (highlighted text drawing) function for JakDraw help text.
+
+### Changed
+- Rename symbols in 256BLOCK and JakDraw.
+- Change JakDraw save format from proprietary JAG to reusable QBasic files (BA1, BA2, BA3, BA4).
+- Change JakDraw color replace to flood fill (but simple horizontal check algorithm may not fill whole area).
+- Improve readability of JakDraw help screen (Use new PrintLit function).
+
+### Fixed
+- Enable sound by default.
+- Do not try to hide the mouse cursor in JakDraw nor JakSound.
+- Use relative paths for install (if using new "Double-click me" install file).
+
+
 ## [unreleased] - 2007-08-09
 ### Added
 - JakSound mouse support.

@@ -1,32 +1,30 @@
-DECLARE SUB OnDragEnd ()
-DECLARE SUB OnDragStart ()
-DECLARE SUB OnDragging ()
 DECLARE FUNCTION MouseInit% ()
 DECLARE SUB MouseStatus (Lb%, Rb%, xMouse%, yMouse%)
 DECLARE SUB MouseRange (X1%, Y1%, x2%, Y2%)
 DECLARE SUB MousePut (xAt%, yAt%)
-DECLARE SUB MouseHide ()
+DECLARE SUB MouseHideDEPRECATED ()
 DECLARE SUB MouseDriver (ax%, bx%, cx%, dx%)
-DECLARE SUB MouseShow ()
-DECLARE SUB MovePointer (xm%, ym%)
-DECLARE SUB MakePointer ()
+DECLARE SUB MouseShowDEPRECATED ()
+DECLARE SUB MovePointerBy (xm%, ym%)       'note: does not call OnMouse functions
+DECLARE SUB MakePointerDEPRECATED ()
 DECLARE SUB DrawPointer ()
+DECLARE SUB UndrawPointer ()
+DECLARE SUB OnDragEnd ()
+DECLARE SUB OnDragStart ()
+DECLARE SUB OnDragging ()
 DECLARE SUB OnMouseDown ()
 DECLARE SUB OnMouseUp ()
-
-DECLARE SUB UndrawPointer ()
 DECLARE SUB LINESAFEH (xStart%, yStart%, xEnd%, yEnd%, iColor%)
 DECLARE SUB LINESAFEV (xStart%, yStart%, xEnd%, yEnd%, iColor%)
-
 DECLARE FUNCTION PointerFromMouseX% (xMouse%)
 DECLARE FUNCTION PointerFromMouseY% (yMouse%)
 DECLARE FUNCTION PointerCroppedX% (xMouse%)
 DECLARE FUNCTION PointerCroppedY% (yMouse%)
 DECLARE FUNCTION SafeMod% (iNum%, iDiv%)
-DECLARE FUNCTION ToString$ (iNow%)
-DECLARE FUNCTION ToDouble# (iNow%)
-DECLARE FUNCTION StringToInt% (sNow$)
-DECLARE FUNCTION CharToInt% (sNow$)
+DECLARE FUNCTION SafeToString$ (iNow%)
+DECLARE FUNCTION SafeToDouble# (iNow%)
+DECLARE FUNCTION SafeStringToInt% (sNow$)
+DECLARE FUNCTION SafeCharToInt% (sNow$)
 
 DECLARE FUNCTION GetUserEntry$ (sCaption$)
 DECLARE SUB MoveTextCursor (iAdder%)
@@ -90,6 +88,10 @@ LOCATE 1, 1
 MousePut 320 / 2, 200 / 2
 MouseRange 0, 0, 320 * 2, 200
 'extra mouse stuff:
+DIM SHARED xPixels AS INTEGER
+xPixels = 320
+DIM SHARED yPixels AS INTEGER
+yPixels = 200
 DIM SHARED xMouseRaw AS INTEGER
 DIM SHARED yMouseRaw AS INTEGER
 DIM SHARED xDragStart AS INTEGER
@@ -102,18 +104,24 @@ DIM SHARED LbPrev AS INTEGER
 LbPrev = 0
 DIM SHARED RbPrev AS INTEGER
 RbPrev = 0
+DIM SHARED Lb%
+Lb% = 0
+DIM SHARED Rb%
+Rb% = 0
 DIM SHARED bMouseMoved AS INTEGER
 bMouseMoved = 0
-DIM SHARED pPointer!(1 TO 8)
+'DIM SHARED pPointer!(1 TO 8)
 DIM SHARED pUnderPointer!(1 TO 8)
 DIM SHARED bUnderPointer AS INTEGER
 bUnderPointer = 0
 DIM SHARED xPointer AS INTEGER
 DIM SHARED yPointer AS INTEGER
+DIM SHARED xPointerDrawn AS INTEGER
+xPointerDrawn = -1 'must start out negative
+DIM SHARED yPointerDrawn AS INTEGER
+xPointerDrawn = -1 'must start out negative
 DIM SHARED xPointerPrev AS INTEGER
-xPointerPrev = -1 'must start out negative
 DIM SHARED yPointerPrev AS INTEGER
-xPointerPrev = -1 'must start out negative
 
 DIM SHARED iPointerWidth AS INTEGER
 DIM SHARED iPointerHeight AS INTEGER
@@ -127,19 +135,19 @@ DIM SHARED yPointerCropped AS INTEGER
 xPointerCropped = -1
 DIM SHARED bPointerShowing AS INTEGER
 bPointerShowing = 0
-MakePointer 'sets pPointer
+'MakePointerDEPRECATED 'sets pPointer
 'end mouse initialization
-DIM SHARED sarrDigit(0 TO 9) AS STRING
-sarrDigit(0) = "0"
-sarrDigit(1) = "1"
-sarrDigit(2) = "2"
-sarrDigit(3) = "3"
-sarrDigit(4) = "4"
-sarrDigit(5) = "5"
-sarrDigit(6) = "6"
-sarrDigit(7) = "7"
-sarrDigit(8) = "8"
-sarrDigit(9) = "9"
+DIM SHARED sarrSafeDigit(0 TO 9) AS STRING
+sarrSafeDigit(0) = "0"
+sarrSafeDigit(1) = "1"
+sarrSafeDigit(2) = "2"
+sarrSafeDigit(3) = "3"
+sarrSafeDigit(4) = "4"
+sarrSafeDigit(5) = "5"
+sarrSafeDigit(6) = "6"
+sarrSafeDigit(7) = "7"
+sarrSafeDigit(8) = "8"
+sarrSafeDigit(9) = "9"
 'end common & mouse functions
 
 
@@ -155,7 +163,7 @@ colAt = 1 'user input location
 bPlaying = 0
 
 DIM SHARED iKey AS INTEGER
-iKey = 8 '8 is E, 1 is A
+iKey = 7 '7 is E, 0 is A
 DIM SHARED iMode AS INTEGER
 iMode = 1 'index of modestartabs
 DIM SHARED IonianDistAtStep(0 TO 7) AS INTEGER
@@ -233,10 +241,6 @@ DIM SHARED iBeatsMax
 iBeatsMax = 960' i.e. 960 could play the whole thing 4 times per second
 DIM SHARED iBars AS INTEGER
 iBars = 32
-DIM SHARED xPixels AS INTEGER
-xPixels = 320
-DIM SHARED yPixels AS INTEGER
-yPixels = 200
 DIM SHARED iNotches AS INTEGER 'was 20
 iNotches = 24
 DIM SHARED TopMargin AS INTEGER 'was 0
@@ -342,17 +346,20 @@ DO 'main event loop
 	MouseStatus Lb, Rb, xMouseRaw, yMouseRaw
 	IF xMouseRawPrev <> xMouseRaw OR yMouseRawPrev <> yMouseRaw OR LbPrev <> Lb OR RbPrev <> Rb THEN
 		bFirst = 0
-		IF xPointerPrev < 0 OR yPointerPrev < 0 THEN
-			bFirst = 1
-			xPointer = PointerFromMouseX%(xMouseRaw)
-			yPointer = PointerFromMouseY%(yMouseRaw)
-			xPointerPrev = xPointer
-			yPointerPrev = yPointer
-			xPointerCropped = PointerCroppedX%(xPointer)
-			yPointerCropped = PointerCroppedY%(yPointer)
-			GET (xPointerCropped - iPointerRad, yPointerCropped - iPointerRad)-(xPointerCropped + iPointerRad, yPointerCropped + iPointerRad), pUnderPointer!(1)
-			bUnderPointer = 1
-		END IF
+		'IF xPointerDrawn < 0 OR yPointerDrawn < 0 THEN
+		'	bFirst = 1
+		'	xPointer = PointerFromMouseX%(xMouseRaw)
+		'	yPointer = PointerFromMouseY%(yMouseRaw)
+		'	xPointerDrawn = xPointer
+		'	yPointerDrawn = yPointer
+		'	xPointerCropped = PointerCroppedX%(xPointer)
+		'	yPointerCropped = PointerCroppedY%(yPointer)
+		'	GET (xPointerCropped - iPointerRad, yPointerCropped - iPointerRad)-(xPointerCropped + iPointerRad, yPointerCropped + iPointerRad), pUnderPointer!(1)
+		'	bUnderPointer = 1
+		'END IF
+		IF xPointerDrawn >= 0 THEN UndrawPointer
+		yPointerPrev = yPointer
+		xPointerPrev = xPointer
 		xPointer = PointerFromMouseX%(xMouseRaw)
 		yPointer = PointerFromMouseY%(yMouseRaw)
 		IF xMouseRawPrev <> xMouseRaw OR yMouseRawPrev <> yMouseRaw THEN
@@ -360,8 +367,8 @@ DO 'main event loop
 		ELSE
 			bMouseMoved = 0
 		END IF
-		'IF bFirst = 0 THEN 
-		UndrawPointer 'PUT (xPointerPrev, yPointerPrev), pPointer!, XOR
+		'IF bFirst = 0 THEN
+		'UndrawPointer 'PUT (xPointerPrev, yPointerPrev), pPointer!, XOR
 		IF Lb = -1 THEN
 			IF LbPrev = -1 THEN
 				IF bMouseMoved = 1 THEN
@@ -403,10 +410,10 @@ DO 'main event loop
 		yMouseRawPrev = yMouseRaw
 		LbPrev = Lb
 		RbPrev = Rb
-		IF bMouseMoved = 1 THEN
-			yPointerPrev = yPointer
-			xPointerPrev = xPointer
-		END IF
+		'IF bMouseMoved = 1 THEN
+		'	yPointerDrawn = yPointer
+		'	xPointerDrawn = xPointer
+		'END IF
 	END IF
 	SELECT CASE INKEY$
 		CASE CHR$(0) + "K": BarChange (-1): DrawSelector 'LEFT ARROW
@@ -432,10 +439,10 @@ DO 'main event loop
 		CASE "u": SpeedChange (1)
 		CASE "o": OctaveChange (-1)
 		CASE "O": OctaveChange (1)
-		CASE "M": ModeChange (1)
-		CASE "m": ModeChange (-1)
-		CASE "K": KeyChange (1)
-		CASE "k": KeyChange (-1)
+		CASE "M": ModeChange (1) : DrawBars : ShowMenu
+		CASE "m": ModeChange (-1) : DrawBars : ShowMenu
+		CASE "K": KeyChange (1) : DrawBars : ShowMenu
+		CASE "k": KeyChange (-1) : DrawBars : ShowMenu
 		CASE "r": RandomBars: DrawBars: ShowMenu
 		CASE "R": RandomBars: DrawBars: ShowMenu
 		'CASE "": IF bMouseMoved = 0 THEN SLEEP 0
@@ -489,9 +496,9 @@ SUB BarChange (xBy%)
 	EraseSelector 'LINE (iSelectBar * iBarSpacing - 1, (yPixels - BottomMargin) + 4)-(iSelectBar * iBarSpacing + 9, (yPixels - BottomMargin) + 8), 16, BF
 	iSelectBar = iSelectBar + xBy%
 	IF (iSelectBar < 1) THEN
-		iSelectBar = 1
-	ELSEIF (iSelectBar > iBars) THEN
 		iSelectBar = iBars
+	ELSEIF (iSelectBar > iBars) THEN
+		iSelectBar = 1
 	END IF
 	'ShowMenu
 END SUB
@@ -511,7 +518,7 @@ SUB DrawBar (xNow%)
 	LINE (LeftNow, BottomNow)-(RightNow, (BottomNow) - bars(xNow%) * iNotchH), iBaseColor + 72 + 24, BF   'lower
 	LINE (LeftNow + 1, (BottomNow) - 1)-(RightNow, (BottomNow) - bars(xNow%) * iNotchH), iBaseColor + 24, BF'upper
 	LINE (LeftNow + 1, (BottomNow) - 1)-(RightNow - 1, ((BottomNow)) - bars(xNow%) * iNotchH + 1), iBaseColor, BF'inner
-	IF IsInKey%(bars(xNow%)) = 0 THEN
+	IF IsInKey%(bars(xNow%)) = 0 AND bars(xNow%) <> 0 THEN
 		LINE (LeftNow + iBarW / 2 - 1, TopNow + 2)-(LeftNow + iBarW / 2 - 1, TopNow + 6), 15  'down 1
 		LINE (LeftNow + iBarW / 2 + 1, TopNow + 2)-(LeftNow + iBarW / 2 + 1, TopNow + 6), 15  'down 2
 		LINE (LeftNow + iBarW / 2 - 2, TopNow + 3)-(LeftNow + iBarW / 2 + 2, TopNow + 3), 15 'across 1
@@ -645,7 +652,7 @@ FUNCTION IsInKey% (NoteX%)
 	END IF
 	bMatch% = 0
 	FOR iStep = 0 TO 7
-		IF IonianDistAtStep(WrapNote07%(iStep + modestartrel(iMode%))) = NoteCooked% THEN
+		IF WrapNote12%(IonianDistAtStep(iStep)+modestartabs(iMode)+iKey) = NoteCooked% THEN 'IF IonianDistAtStep(WrapNote07%(iStep + modestartrel(iMode))) = NoteCooked% THEN
 			bMatch% = 1
 			EXIT FOR
 		END IF
@@ -655,11 +662,14 @@ END FUNCTION
 
 SUB KeyChange (iBy%)
 	iKey = iKey + iBy%
-	IF (iKey < 1) THEN
-		iKey = 1
-	ELSEIF (iKey > 12) THEN
+	IF (iKey < 0) THEN
+		OctaveChange -1
+		iKey = 11
+		'-1 is 11 (Maj 7th, i.e. Key of Ab)
+	ELSEIF (iKey > 11) THEN
 		OctaveChange 1
-		iKey = 1
+		iKey = 0
+		'i.e. 13 is actually 1 (A#) on an octave of 0-12 since 12 is the same note as zero
 	END IF
 	ShowMenu
 END SUB
@@ -671,19 +681,19 @@ END FUNCTION
 FUNCTION KeyToStringCustom$ (iKeyX%, iModeX%)
 	sReturn$ = ""
 	SELECT CASE iKeyX%
-		CASE 1: sReturn$ = sReturn$ + "A"
-		CASE 2: sReturn$ = sReturn$ + "Bb"
-		CASE 3: sReturn$ = sReturn$ + "B"
-		CASE 4: sReturn$ = sReturn$ + "C"
-		CASE 5: sReturn$ = sReturn$ + "C#"
-		CASE 6: sReturn$ = sReturn$ + "D"
-		CASE 7: sReturn$ = sReturn$ + "Eb"
-		CASE 8: sReturn$ = sReturn$ + "E"
-		CASE 9: sReturn$ = sReturn$ + "F"
-		CASE 10: sReturn$ = sReturn$ + "F#"
-		CASE 11: sReturn$ = sReturn$ + "G"
-		CASE 12: sReturn$ = sReturn$ + "G#"
-		CASE ELSE: sReturn$ = sReturn$ + "nokey#" + ToString$(iKeyX%)
+		CASE 0: sReturn$ = sReturn$ + "A"
+		CASE 1: sReturn$ = sReturn$ + "Bb"
+		CASE 2: sReturn$ = sReturn$ + "B"
+		CASE 3: sReturn$ = sReturn$ + "C"
+		CASE 4: sReturn$ = sReturn$ + "C#"
+		CASE 5: sReturn$ = sReturn$ + "D"
+		CASE 6: sReturn$ = sReturn$ + "Eb"
+		CASE 7: sReturn$ = sReturn$ + "E"
+		CASE 8: sReturn$ = sReturn$ + "F"
+		CASE 9: sReturn$ = sReturn$ + "F#"
+		CASE 10: sReturn$ = sReturn$ + "G"
+		CASE 11: sReturn$ = sReturn$ + "G#"
+		CASE ELSE: sReturn$ = sReturn$ + "nokey#" + SafeToString$(iKeyX%)
 	END SELECT
 	sReturn$ = sReturn$ + "-"
 	SELECT CASE iModeX%
@@ -697,7 +707,7 @@ FUNCTION KeyToStringCustom$ (iKeyX%, iModeX%)
 		CASE 7: sReturn$ = sReturn$ + "Locrian"  'hard to work with, sometimes considered theoretical
 		CASE ELSE: sReturn$ = sReturn$ + "no"
 	END SELECT
-	sReturn$ = sReturn$ + " mode:" + ToString$(iModeX%) + "  RelToMajor:" + ToString(modestartrel(iModeX%))
+	sReturn$ = sReturn$ + "(" + SafeToString$(iModeX%) + ")  RelToMajor:" + SafeToString(modestartrel(iModeX%))
 	KeyToStringCustom$ = sReturn$
 END FUNCTION
 
@@ -734,20 +744,20 @@ FUNCTION LoadAs% (sFile$)
 			PRINT "[empty file!]"
 		ELSE
 			LINE INPUT #1, temp$ 'note count as saved in file
-			iBarsSpecified% = StringToInt(temp$)
+			iBarsSpecified% = SafeStringToInt(temp$)
 			iLine% = iLine% + 1
 			FOR iBarNow% = 1 TO iBarsSpecified%
 				IF (EOF(1)) THEN
 					EXIT FOR
 				ELSE
 					LINE INPUT #1, temp$
-					IF iBarNow% <= iBars THEN bars(iBarNow%) = StringToInt%(temp$)
+					IF iBarNow% <= iBars THEN bars(iBarNow%) = SafeStringToInt%(temp$)
 					iLine% = iLine% + 1
 				END IF
 			NEXT iBarNow%
 			
 			IF iLine% - 1 < iBars THEN
-				PRINT "(File missing some of " + ToString$(iBarsSpecified%) + " notes specified"
+				PRINT "(File missing some of " + SafeToString$(iBarsSpecified%) + " notes specified"
 				PRINT " ending at line "; iLine%; "."
 				PRINT " If old, rename to JAS and press F2 in JakSound)";
 			ELSE
@@ -755,19 +765,19 @@ FUNCTION LoadAs% (sFile$)
 					PRINT "[file missing BPM]";
 				ELSE
 					LINE INPUT #1, temp$ 'BPM
-					iBeats = StringToInt%(temp$)
+					iBeats = SafeStringToInt%(temp$)
 					iLine% = iLine% + 1
 					IF (EOF(1)) THEN
 						PRINT "[file missing KEY]";
 					ELSE
 						LINE INPUT #1, temp$ 'KEY
-						iKey = StringToInt%(temp$)
+						iKey = SafeStringToInt%(temp$)
 						iLine% = iLine% + 1
 						IF (EOF(1)) THEN
 							PRINT "[file missing MODE]";
 						ELSE
 							LINE INPUT #1, temp$ 'MODE
-							iMode = StringToInt%(temp$)
+							iMode = SafeStringToInt%(temp$)
 							iLine% = iLine% + 1
 							bGood = 1
 						END IF
@@ -803,7 +813,7 @@ END SUB
 SUB ModeChange (iBy%)
 iMode = iMode + iBy%
 IF (iMode < 1) THEN
-	iMode = 1
+	iMode = 7
 ELSEIF (iMode > 7) THEN
 	iMode = 1
 END IF
@@ -837,21 +847,21 @@ END FUNCTION
 SUB OctaveChange (iBy%)
 Octave = Octave + iBy%
 IF (Octave < OctaveMin) THEN
-	Octave = OctaveMin
-ELSEIF (Octave > OctaveMax) THEN
 	Octave = OctaveMax
+ELSEIF (Octave > OctaveMax) THEN
+	Octave = OctaveMin
 END IF
 ShowMenu
 END SUB
 
 
 SUB PitchChange (yBy%)
-bars(iSelectBar) = bars(iSelectBar) + yBy%
-IF (bars(iSelectBar) < 0) THEN
-	bars(iSelectBar) = 0
-ELSEIF (bars(iSelectBar) > iNotches) THEN
-	bars(iSelectBar) = iNotches
-END IF
+	bars(iSelectBar) = bars(iSelectBar) + yBy%
+	IF (bars(iSelectBar) < 0) THEN
+		bars(iSelectBar) = iNotches
+	ELSEIF (bars(iSelectBar) > iNotches) THEN
+		bars(iSelectBar) = 0
+	END IF
 'ShowMenu
 END SUB
 
@@ -871,11 +881,11 @@ SUB PlayAll
 			'OctaveNow = OctaveNow + 1
 			IF INKEY$ = "x" THEN iBarNow% = iBars
 		ELSEIF bars(iBarNow%) = 0 THEN
-			SOUND 22000, ((60 / iBeats) / 8) * (18.2)
+			SOUND 30000, ((60 / iBeats) / 8) * (18.2)
 		ELSE
 			SOUND scale(Octave, bars(iBarNow%)), ((60 / iBeats) / 8) * (18.2)'1sec is about 18.2 ticks; /8 since 4/8 timing
 		END IF
-		ShowMenu
+		'ShowMenu
 		EraseSelector
 	NEXT iBarNow%
 	iSelectBar = iPrev
@@ -959,17 +969,17 @@ END SUB
 
 FUNCTION SaveAs% (sFile$)
 	OPEN sFile$ + ".jks" FOR OUTPUT AS #1
-		PRINT #1, ToString(iBars)
+		PRINT #1, SafeToString(iBars)
 		'PRINT #1, CHR$(13);
 		FOR iBarNow% = 1 TO iBars
-			PRINT #1, ToString(bars(iBarNow%))
+			PRINT #1, SafeToString(bars(iBarNow%))
 			'PRINT #1, CHR$(13);
 		NEXT iBarNow%
-		PRINT #1, ToString(iBeats)
+		PRINT #1, SafeToString(iBeats)
 		'PRINT #1, CHR$(13);
-		PRINT #1, ToString(iKey)
+		PRINT #1, SafeToString(iKey)
 		'PRINT #1, CHR$(13);
-		PRINT #1, ToString(iMode)
+		PRINT #1, SafeToString(iMode)
 		'PRINT #1, CHR$(13);
 	CLOSE
 	SaveAs% = 1
@@ -1006,17 +1016,25 @@ SUB ScriptBars
 			PRINT "          END IF"
 			PRINT "     NEXT iStep"
 			PRINT "NEXT iOv"
-			FOR iBarNow% = 1 TO iBars
+			'	IF bars(iBarNow%) > 12 THEN
+			'		SOUND scale(Octave + 1, bars(iBarNow%) - 12), ((60 / iBeats) / 8) * (18.2)'1sec is about 18.2 ticks; /8 since 4/8 timing
+			'		IF INKEY$ = "x" THEN iBarNow% = iBars
+			'	ELSEIF bars(iBarNow%) = 0 THEN
+			'		SOUND 30000, ((60 / iBeats) / 8) * (18.2)
+			'	ELSE
+			'		SOUND scale(Octave, bars(iBarNow%)), ((60 / iBeats) / 8) * (18.2)'1sec is about 18.2 ticks; /8 since 4/8 timing
+			'	END IF
+			FOR iBarNow% = 1 to iBars
 				IF bars(iBarNow%) > 12 THEN
-					PRINT #1, "SOUND "; scale(Octave + 1, bars(iBarNow%) - 12); ", "; ((60 / iBeats) / 8) * (18.2); "' 1sec is about 18.2 ticks; /8 since 4/8 timing"
+					PRINT #1, "SOUND "; scale(Octave + 1, bars(iBarNow%) - 12); ", "; ((60 / iBeats) / 8) * (18.2)
 					'NotchNow = NotchNow - 12
 					'OctaveNow = OctaveNow + 1
 				ELSEIF bars(iBarNow%) = 0 THEN
-					PRINT #1, "SOUND 22000, "; ((60 / iBeats) / 8) * (18.2)
+					PRINT #1, "SOUND 30000, "; ((60 / iBeats) / 8) * (18.2); "' rest"
 				ELSE
 					PRINT #1, "SOUND "; scale(Octave, bars(iBarNow%)); ", "; ((60 / iBeats) / 8) * (18.2); "' 1sec is about 18.2 ticks; /8 since 4/8 timing"
 				END IF
-		
+
 		'               PRINT #1, "SOUND "; bars(iBarNow%) * 50; ", "; iBeats / 10
 			NEXT iBarNow%
 		CLOSE
@@ -1045,7 +1063,7 @@ SUB SetBarByPointer (bInTune%)
 					DrawSelector
 				END IF
 				IF YToBarNotch%(yPointer) <> bars(iCheckBar) THEN
-					IF bInTune% = 1 THEN
+					IF bInTune% = 1 AND bars(iCheckBar) <> 0 THEN
 						PitchChange NoteInKey%(YToBarNotch%(yPointer)) - bars(iCheckBar)
 					ELSE
 						PitchChange YToBarNotch%(yPointer) - bars(iCheckBar)
@@ -1090,7 +1108,7 @@ SUB ShowMenu
 		LOCATE 3, 1
 		PRINT "Key:";
 		PRINT KeyToString$;
-		
+
 		LOCATE 1, 1
 		PRINT "";
 		COLOR iLight: PRINT "S";
@@ -1138,19 +1156,19 @@ SUB ShowMenu
 		END IF
 		PRINT iBeats
 		PRINT "BPM     ";
-		PRINT rSpeed;
-		PRINT "ms      "
-		PRINT rHz;
-		PRINT "Hz     ";
+		PRINT rSpeed*iBars;
+		PRINT "ms total"
+		'PRINT rHz;
+		'PRINT "Hz     ";
 	END IF
 END SUB
 
 SUB SpeedChange (iBy%)
 	iBeats = iBeats + iBy%
-	IF (iBeats < 1) THEN
-		iBeats = 1
-	ELSEIF (iBeats > iBeatsMax) THEN
+	IF (iBeats < iBeatsMin) THEN
 		iBeats = iBeatsMax
+	ELSEIF (iBeats > iBeatsMax) THEN
+		iBeats = iBeatsMin
 	END IF
 	ShowMenu
 END SUB
@@ -1195,16 +1213,18 @@ FUNCTION YToBarNotch% (yNow%)
 END FUNCTION
 
 'start common & mouse functions
-FUNCTION CharToInt% (sNow$)
+FUNCTION SafeCharToInt% (sNow$)
 	iReturn% = 0
 	FOR iVal% = 0 TO 9
-		IF sarrDigit(iVal%) = sNow$ THEN
+		IF sarrSafeDigit(iVal%) = sNow$ THEN
 			iReturn% = iVal%
 			EXIT FOR
 		END IF
 	NEXT iVal%
-	CharToInt% = iReturn%
+	SafeCharToInt% = iReturn%
 END FUNCTION
+
+
 SUB DrawPointer
 	IF bPointerShowing = 0 THEN
 		'draw mouse cursor manually
@@ -1215,15 +1235,17 @@ SUB DrawPointer
 		LINESAFEH xPointer - (iPointerRad - 1), yPointer - 1, xPointer - 1, yPointer - 1, 0
 		LINESAFEH xPointer - iPointerRad, yPointer, xPointer - 1, yPointer, 15 'LEFT
 		LINESAFEH xPointer - (iPointerRad - 1), yPointer + 1, xPointer - 1, yPointer + 1, 0
-	       
+
 		LINESAFEH xPointer + (iPointerRad - 1), yPointer - 1, xPointer + 1, yPointer - 1, 0
 		LINESAFEH xPointer + iPointerRad, yPointer, xPointer + 1, yPointer, 15 'RIGHT
 		LINESAFEH xPointer + (iPointerRad - 1), yPointer + 1, xPointer + 1, yPointer + 1, 0
-	       
+
 		LINESAFEV xPointer, yPointer - 1, xPointer, yPointer - iPointerRad, 15 'TOP
-	       
+
 		LINESAFEV xPointer, yPointer + 1, xPointer, yPointer + iPointerRad, 15 'BOTTOM
 		bPointerShowing = 1
+		xPointerDrawn = xPointer
+		yPointerDrawn = yPointer
 	END IF
 END SUB
 
@@ -1256,7 +1278,7 @@ SUB MouseDriver (ax%, bx%, cx%, dx%)
 	CALL Absolute(ax%, bx%, cx%, dx%, mouse%)
 END SUB
 
-SUB MouseHide
+SUB MouseHideDEPRECATED
  ax% = 2
  MouseDriver ax%, 0, 0, 0
 END SUB
@@ -1285,8 +1307,8 @@ SUB MouseRange (X1%, Y1%, x2%, Y2%)
 	MouseDriver ax%, 0, cx%, dx%
 END SUB
 
-SUB MouseShow
-	PUT (xPointer, yPointer), pPointer!, XOR
+SUB MouseShowDEPRECATED
+	'PUT (xPointer, yPointer), pPointer!, XOR
 END SUB
 
 SUB MouseStatus (Lb%, Rb%, xMouse%, yMouse%)
@@ -1299,12 +1321,17 @@ SUB MouseStatus (Lb%, Rb%, xMouse%, yMouse%)
 END SUB
 
 DEFINT A-Z
-SUB MovePointer (xm%, ym%)
+SUB MovePointerBy (xm%, ym%)
+	UndrawPointer
 	'manually move mouse cursor
-	xPointer = xPointer + xm%
-	yPointer = yPointer + ym%
+	'xPointer = xPointer + xm%
+	'yPointer = yPointer + ym%
 	MousePut xMouseRaw + xm% * 2, yMouseRaw + ym%
-	'DrawWindow
+	'bMouseMoved = 1
+	xPointer = PointerFromMouseX%(xMouseRaw)
+	yPointer = PointerFromMouseY%(yMouseRaw)
+	'DrawWindow 'commented for debug only
+	DrawPointer
 END SUB
 
 SUB OnDragEnd
@@ -1395,7 +1422,7 @@ FUNCTION PointerCroppedY% (yMouse%)
 END FUNCTION
 
 FUNCTION PointerFromMouseX% (xMouse%)
-	PointerFromMouseX% = INT(ToDouble#(xMouse%) / 2! + .5)
+	PointerFromMouseX% = INT(SafeToDouble#(xMouse%) / 2! + .5)
 END FUNCTION
 
 FUNCTION PointerFromMouseY% (yMouse%)
@@ -1418,20 +1445,20 @@ FUNCTION SafeMod% (iNum%, iDiv%)
 		SafeMod% = iNum%
 	END IF
 END FUNCTION
-FUNCTION StringToInt% (sNow$)
+FUNCTION SafeStringToInt% (sNow$)
 	iReturn% = 0
 	iMultiplier% = 1
 	FOR iChar% = LEN(sNow$) TO 1 STEP -1
-		iReturn% = iReturn% + iMultiplier% * CharToInt%(MID$(sNow$, iChar%, 1))
+		iReturn% = iReturn% + iMultiplier% * SafeCharToInt%(MID$(sNow$, iChar%, 1))
 		iMultiplier% = iMultiplier% * 10
 	NEXT iChar%
-	StringToInt% = iReturn%
+	SafeStringToInt% = iReturn%
 END FUNCTION
-FUNCTION ToDouble# (iNow%)
-	ToDouble# = iNow%
+FUNCTION SafeToDouble# (iNow%)
+	SafeToDouble# = iNow%
 END FUNCTION
 
-FUNCTION ToString$ (iNow%)
+FUNCTION SafeToString$ (iNow%)
 	bNeg = 0
 	IF iNow% < 0 THEN
 		bNeg = 1
@@ -1451,32 +1478,33 @@ FUNCTION ToString$ (iNow%)
 		iValDigit% = SafeMod%(iRemaining%, 10)
 		'iRemaining% = iRemaining% - iValDigit% * iDivisor%
 		'iRemaining% = iRemaining% / 10
-		sReturn$ = sarrDigit(iValDigit%) + sReturn$
+		sReturn$ = sarrSafeDigit(iValDigit%) + sReturn$
 		iRemaining% = iRemaining% / 10 - .4'-.4 to avoid automatic rounding up
 		'rHighDivisor = rHighDivisor / 10
 		'iDivisor% = iDivisor% * 10
 	LOOP
 	IF bNeg = 1 THEN sReturn$ = "-" + sReturn$
-	ToString$ = sReturn$
+	IF sReturn$ = "" THEN sReturn$ = "0" 'ok to have logic resulting in this since parser starts at right
+	SafeToString$ = sReturn$
 END FUNCTION
 
 SUB UndrawPointer
 	IF bUnderPointer = 1 THEN
 		IF bPointerShowing = 1 THEN
-			PUT (PointerCroppedX%(xPointerPrev) - iPointerRad, PointerCroppedY%(yPointerPrev) - iPointerRad), pUnderPointer!, PSET
+			PUT (PointerCroppedX%(xPointerDrawn) - iPointerRad, PointerCroppedY%(yPointerDrawn) - iPointerRad), pUnderPointer!, PSET
 			bPointerShowing = 0
 		END IF
 	END IF
 END SUB
 
-SUB MakePointer
+SUB MakePointerDEPRECATED
 	'get mouse cursor
-	LINE (0, 0)-(4, 4), 0
-	LINE (2, 0)-STEP(0, 1), 15
-	LINE STEP(0, 2)-STEP(0, 1), 15
-	LINE STEP(-3, -2)-STEP(2, 0), 15
-	LINE STEP(2, 0)-STEP(1, 0), 15
-	GET (0, 0)-(4, 4), pPointer!(1)
-	LINE (0, 0)-(4, 4), 0
+	'LINE (0, 0)-(4, 4), 0
+	'LINE (2, 0)-STEP(0, 1), 15
+	'LINE STEP(0, 2)-STEP(0, 1), 15
+	'LINE STEP(-3, -2)-STEP(2, 0), 15
+	'LINE STEP(2, 0)-STEP(1, 0), 15
+	'GET (0, 0)-(4, 4), pPointer!(1)
+	'LINE (0, 0)-(4, 4), 0
 END SUB
 
