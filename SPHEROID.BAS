@@ -238,15 +238,19 @@ Sub shoot
             Line (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 16
             For i = 1 To 20
                 Circle (xbomb(locbomb), ybomb(locbomb)), i, 4
+                drawguy ' make sure sphere doesn't appear to be harmed on successful demine
                 Select Case sound$
                     Case "1": Sound 100 + i, .3
                     Case "0": Sound 24000, .3
                 End Select
-           
+
             Next i
-   
+
             For i = 20 To 1 Step -1
                 Circle (xbomb(locbomb), ybomb(locbomb)), i, 16
+                If (i > 6) Then
+                    drawguy ' make sure sphere doesn't appear partially erased on successful demine
+                End If
                 Select Case sound$
                     Case "1": Sound 110 - i, .3
                     Case "0": Sound 24000, .3
