@@ -1,7 +1,22 @@
+# compiled non-Windows binaries
+/256BLOCK
+/JAKSOUND
+/JAKDRAW
+/QJAKMENU
+/SETUP
+/SMBREAK
+/SPHEROID
+/SPHMENU
+
+# 3rd-party binaries
 /QBASIC.EXE
 /QBASIC.HLP
+
+# inapplicable files from old versions
 /Super Mega Break.pif.PIF
 /SMBREAK.EXE
 /SMBREAK.FREEBASIC.BAS
 /*~
 /redact.sh
+
+# other
