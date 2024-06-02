@@ -173,7 +173,7 @@ Do
 Loop
 
 endit:
-Chain ("qjakmenu.bas")
+Chain ("QJAKMENU.BAS")
 End
 
 Sub brush

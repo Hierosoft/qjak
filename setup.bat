@@ -1,1 +1,1 @@
-a:\qbasic.exe /run a:\setup.bas
+a:\qbasic.exe /run a:\SETUP.BAS

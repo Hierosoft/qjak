@@ -35,7 +35,7 @@ SPLITHERE:
 progdir$ = Right$(progdir$, Len(progdir$) - (charnow)) 'this is correct since STARTS at right
 ChDir (progdir$)
 
-Open "BSOUND.DAT" For Input As #1
+Open "bsound.dat" For Input As #1
 Line Input #1, sound$
 Close
 
@@ -283,7 +283,7 @@ End Sub
 
 Sub switchsound
 
-    Open "BSOUND.DAT" For Output As #1
+    Open "bsound.dat" For Output As #1
     Select Case sound$
         Case "0": Print #1, "1": sound$ = "1"
         Case "1": Print #1, "0": sound$ = "0"

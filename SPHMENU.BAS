@@ -41,12 +41,12 @@ menuitem$(2) = "Help"
 menuitem$(3) = "Quit"
 usemenu
 
-Chain ("qjakmenu.bas")
+Chain ("QJAKMENU.BAS")
 End
 
 Sub ChoseSoGo
     Select Case seltext
-        Case 1: Chain "spheroid.bas"
+        Case 1: Chain "SPHEROID.BAS"
         CASE 2: CLS : PRINT "Made by Jake Gustafson": COLOR 3: PRINT : PRINT "1.  Use arrow keys to move sphere": PRINT "2.  Enter shoots when near land mine": PRINT "3.  Escape quits": PRINT : COLOR 15: PRINT "Press any other key to continue...":  _
 SLEEP 0: CLS : laybombs: usemenu
         Case 3: Exit Sub

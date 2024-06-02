@@ -445,7 +445,7 @@ Loop
 
 
 endit:
-Chain ("qjakmenu.bas")
+Chain ("QJAKMENU.BAS")
 End
 
 ChoseSoGo:
