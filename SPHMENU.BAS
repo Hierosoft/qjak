@@ -7,33 +7,33 @@ DECLARE SUB refreshmenubox ()
 DECLARE SUB refreshmenu ()
 DECLARE SUB intro ()
 DECLARE SUB delaye ()
-DIM SHARED tone
-DIM SHARED menuitem$(1 TO 3)
-DIM SHARED seltext AS INTEGER
-DIM SHARED sound$
-OPEN "qjak.ini" FOR INPUT AS #1
-          LINE INPUT #1, progdir$
-CLOSE
-FOR charnow = 1 TO LEN(progdir$)
-        IF MID$(progdir$, charnow, 1) = "=" THEN GOTO SPLITHERE
-NEXT charnow
+Dim Shared tone
+Dim Shared menuitem$(1 To 3)
+Dim Shared seltext As Integer
+Dim Shared sound$
+Open "qjak.ini" For Input As #1
+Line Input #1, progdir$
+Close
+For charnow = 1 To Len(progdir$)
+    If Mid$(progdir$, charnow, 1) = "=" Then GoTo SPLITHERE
+Next charnow
 SPLITHERE:
-progdir$ = RIGHT$(progdir$, LEN(progdir$) - (charnow))  'this is correct since STARTS at right
-CHDIR (progdir$)
+progdir$ = Right$(progdir$, Len(progdir$) - (charnow)) 'this is correct since STARTS at right
+ChDir (progdir$)
 
-OPEN "bsound.dat" FOR INPUT AS #1
-          LINE INPUT #1, sound$
-CLOSE
+Open "bsound.dat" For Input As #1
+Line Input #1, sound$
+Close
 
-CLS
+Cls
 
 'colors #16-31 is grayscale black to white in 256 colors (screen 13 mode)
 
-SCREEN 13
+Screen 13
 
 laybombs
 intro
-SLEEP 1
+Sleep 1
 delaye
 
 menuitem$(1) = "Play"
@@ -41,140 +41,140 @@ menuitem$(2) = "Help"
 menuitem$(3) = "Quit"
 usemenu
 
-CHAIN ("qjakmenu.bas")
-END
+Chain ("qjakmenu.bas")
+End
 
-SUB ChoseSoGo
-    SELECT CASE seltext
-        CASE 1: CHAIN "spheroid.bas"
+Sub ChoseSoGo
+    Select Case seltext
+        Case 1: Chain "spheroid.bas"
         CASE 2: CLS : PRINT "Made by Jake Gustafson": COLOR 3: PRINT : PRINT "1.  Use arrow keys to move sphere": PRINT "2.  Enter shoots when near land mine": PRINT "3.  Escape quits": PRINT : COLOR 15: PRINT "Press any other key to continue...":  _
 SLEEP 0: CLS : laybombs: usemenu
-        CASE 3: EXIT SUB
-        CASE ELSE: RETURN
-    END SELECT
-END SUB
+        Case 3: Exit Sub
+        Case Else: Return
+    End Select
+End Sub
 
-SUB delaye
-SELECT CASE sound$
-     CASE "1": SOUND tone, .4
-     CASE "0": SOUND 20000, .4
-END SELECT
-tone = tone + colour
+Sub delaye
+    Select Case sound$
+        Case "1": Sound tone, .4
+        Case "0": Sound 20000, .4
+    End Select
+    tone = tone + colour
 
-END SUB
+End Sub
 
-SUB intro
+Sub intro
 
-tone = 40
-outness = 30
-outadd = .5
-center = 150
-centeradd = 3.4
-SLEEP 1
-SCREEN 13
-FOR colour = 16 TO 31
-    CIRCLE (center, center), outness, colour
-    PAINT (center, center), colour
-    center = center - centeradd
-    centeradd = centeradd - .3
-    outness = outness - outadd
-    outadd = outadd + .2
-    delaye
-NEXT colour
+    tone = 40
+    outness = 30
+    outadd = .5
+    center = 150
+    centeradd = 3.4
+    Sleep 1
+    Screen 13
+    For colour = 16 To 31
+        Circle (center, center), outness, colour
+        Paint (center, center), colour
+        center = center - centeradd
+        centeradd = centeradd - .3
+        outness = outness - outadd
+        outadd = outadd + .2
+        delaye
+    Next colour
 
-END SUB
+End Sub
 
-SUB laybombs
+Sub laybombs
 
-FOR i = 1 TO 30
-     currentbombx = INT((RND * 319) + 1)
-     currentbomby = INT((RND * 199) + 1)
-     FOR radius = 1 TO 3
-          SELECT CASE sound$
-               CASE "1": SOUND 60 + (radius * 3), .3
-               CASE ELSE: SOUND 20000, .3
-          END SELECT
-          CIRCLE (currentbombx, currentbomby), radius, 4
-          CIRCLE (currentbombx, currentbomby), radius - 1, 16
-     NEXT radius
-          CIRCLE (currentbombx, currentbomby), 2, 113
-          CIRCLE (currentbombx, currentbomby), 4, 113
-          CIRCLE (currentbombx, currentbomby), 3, 4
-NEXT i
+    For i = 1 To 30
+        currentbombx = Int((Rnd * 319) + 1)
+        currentbomby = Int((Rnd * 199) + 1)
+        For radius = 1 To 3
+            Select Case sound$
+                Case "1": Sound 60 + (radius * 3), .3
+                Case Else: Sound 20000, .3
+            End Select
+            Circle (currentbombx, currentbomby), radius, 4
+            Circle (currentbombx, currentbomby), radius - 1, 16
+        Next radius
+        Circle (currentbombx, currentbomby), 2, 113
+        Circle (currentbombx, currentbomby), 4, 113
+        Circle (currentbombx, currentbomby), 3, 4
+    Next i
 
-END SUB
+End Sub
 
-SUB refreshmenu
+Sub refreshmenu
 
-FOR drawchoices = 1 TO 3
-    IF (seltext = drawchoices) THEN
-      LOCATE 8 + drawchoices + drawchoices, 18
-      COLOR 34
-      PRINT menuitem$(drawchoices); "!"
-    ELSE
-      LOCATE 8 + drawchoices + drawchoices, 18
-      COLOR 15
-      PRINT menuitem$(drawchoices); " "
-    END IF
+    For drawchoices = 1 To 3
+        If (seltext = drawchoices) Then
+            Locate 8 + drawchoices + drawchoices, 18
+            Color 34
+            Print menuitem$(drawchoices); "!"
+        Else
+            Locate 8 + drawchoices + drawchoices, 18
+            Color 15
+            Print menuitem$(drawchoices); " "
+        End If
 
-NEXT drawchoices
+    Next drawchoices
 
-END SUB
+End Sub
 
-SUB refreshmenubox
+Sub refreshmenubox
 
-bordlx = 99
-bordly = 50
-bordrx = 219
-bordry = 150
+    bordlx = 99
+    bordly = 50
+    bordrx = 219
+    bordry = 150
 
-FOR bordre = 17 TO 21
-   LINE (bordlx, bordly)-(bordrx, bordry), bordre, BF
-   bordlx = bordlx + 1
-   bordly = bordly + 1
-   bordrx = bordrx - 1
-   bordry = bordry - 1
-NEXT bordre
-   bordlx = bordlx + 1
-   bordly = bordly + 1
-   bordrx = bordrx - 1
-   bordry = bordry - 1
-   LINE (bordlx, bordly)-(bordrx, bordry), 0, BF
+    For bordre = 17 To 21
+        Line (bordlx, bordly)-(bordrx, bordry), bordre, BF
+        bordlx = bordlx + 1
+        bordly = bordly + 1
+        bordrx = bordrx - 1
+        bordry = bordry - 1
+    Next bordre
+    bordlx = bordlx + 1
+    bordly = bordly + 1
+    bordrx = bordrx - 1
+    bordry = bordry - 1
+    Line (bordlx, bordly)-(bordrx, bordry), 0, BF
 
-END SUB
+End Sub
 
-SUB switchsound
+Sub switchsound
 
-OPEN "bsound.dat" FOR OUTPUT AS #1
-     SELECT CASE sound$
-          CASE "0": PRINT #1, "1": sound$ = "1"
-          CASE "1": PRINT #1, "0": sound$ = "0"
-     END SELECT
-CLOSE
-END SUB
+    Open "bsound.dat" For Output As #1
+    Select Case sound$
+        Case "0": Print #1, "1": sound$ = "1"
+        Case "1": Print #1, "0": sound$ = "0"
+    End Select
+    Close
+End Sub
 
-SUB usemenu
+Sub usemenu
 
-menuitem$(1) = "Play"
-menuitem$(2) = "Help"
-menuitem$(3) = "Quit"
-seltext = 1
+    menuitem$(1) = "Play"
+    menuitem$(2) = "Help"
+    menuitem$(3) = "Quit"
+    seltext = 1
 
-refreshmenubox
-LOCATE 2, 11
-PRINT "S P H E R O I D";
-COLOR 43
-PRINT "  2.1"
-rechoose:
-refreshmenu
-SELECT CASE INKEY$
-  CASE CHR$(0) + "H": seltext = seltext - 1: IF seltext < 1 THEN seltext = 3: refreshmenu
-  CASE CHR$(0) + "P": seltext = seltext + 1: IF seltext > 3 THEN seltext = 1: refreshmenu
-  CASE "s": switchsound:
-  CASE CHR$(13): ChoseSoGo: EXIT SUB
-  CASE "": SLEEP 0
-  CASE ELSE: GOTO rechoose
-END SELECT
-GOTO rechoose
-END SUB
+    refreshmenubox
+    Locate 2, 11
+    Print "S P H E R O I D";
+    Color 43
+    Print "  2.1"
+    rechoose:
+    refreshmenu
+    Select Case InKey$
+        Case Chr$(0) + "H": seltext = seltext - 1: If seltext < 1 Then seltext = 3: refreshmenu
+        Case Chr$(0) + "P": seltext = seltext + 1: If seltext > 3 Then seltext = 1: refreshmenu
+        Case "s": switchsound:
+        Case Chr$(13): ChoseSoGo: Exit Sub
+        Case "": Sleep 0
+        Case Else: GoTo rechoose
+    End Select
+    GoTo rechoose
+End Sub
 

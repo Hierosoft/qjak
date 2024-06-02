@@ -14,33 +14,33 @@ DECLARE SUB moveleft ()
 DECLARE SUB drawguy ()
 DECLARE SUB drawbombs ()
 DECLARE SUB setbombs ()
-DIM SHARED xguy AS INTEGER
-DIM SHARED yguy AS INTEGER
-DIM SHARED bomount AS INTEGER
-DIM SHARED xbomb(1 TO 20) AS INTEGER
-DIM SHARED ybomb(1 TO 20) AS INTEGER
-DIM SHARED bombsleft AS INTEGER
-DIM SHARED lives AS INTEGER
-DIM SHARED dirc$
-DIM SHARED sound$
-DIM SHARED exable%
-DIM SHARED watime AS LONG
-OPEN "qjak.ini" FOR INPUT AS #1
-          LINE INPUT #1, progdir$
-CLOSE
-FOR charnow = 1 TO LEN(progdir$)
-        IF MID$(progdir$, charnow, 1) = "=" THEN GOTO SPLITHERE
-NEXT charnow
+Dim Shared xguy As Integer
+Dim Shared yguy As Integer
+Dim Shared bomount As Integer
+Dim Shared xbomb(1 To 20) As Integer
+Dim Shared ybomb(1 To 20) As Integer
+Dim Shared bombsleft As Integer
+Dim Shared lives As Integer
+Dim Shared dirc$
+Dim Shared sound$
+Dim Shared exable%
+Dim Shared watime As Long
+Open "qjak.ini" For Input As #1
+Line Input #1, progdir$
+Close
+For charnow = 1 To Len(progdir$)
+    If Mid$(progdir$, charnow, 1) = "=" Then GoTo SPLITHERE
+Next charnow
 SPLITHERE:
-progdir$ = RIGHT$(progdir$, LEN(progdir$) - (charnow))  'this is correct since STARTS at right
-CHDIR (progdir$)
+progdir$ = Right$(progdir$, Len(progdir$) - (charnow)) 'this is correct since STARTS at right
+ChDir (progdir$)
 
-OPEN "bsound.dat" FOR INPUT AS #1
-          LINE INPUT #1, sound$
-CLOSE
+Open "bsound.dat" For Input As #1
+Line Input #1, sound$
+Close
 
-SCREEN 13
-CLS
+Screen 13
+Cls
 
 xguy = 10
 yguy = 10
@@ -53,269 +53,269 @@ laybombs
 drawguy
 dirc$ = "right"
 redo:
-DO
-  slide
-  SELECT CASE INKEY$
-     CASE CHR$(0) + "K": moveleft: checkbomb: dirc$ = "left"
-     CASE CHR$(0) + "M": moveright: checkbomb: dirc$ = "right"
-     CASE CHR$(0) + "H": moveup: checkbomb: dirc$ = "up"
-     CASE CHR$(0) + "P": movedown: checkbomb: dirc$ = "down"
-     CASE "s": switchsound
-     CASE CHR$(13): shoot
-     CASE CHR$(27): EXIT DO
-     CASE ELSE: GOTO redo
-  END SELECT
-LOOP
+Do
+    slide
+    Select Case InKey$
+        Case Chr$(0) + "K": moveleft: checkbomb: dirc$ = "left"
+        Case Chr$(0) + "M": moveright: checkbomb: dirc$ = "right"
+        Case Chr$(0) + "H": moveup: checkbomb: dirc$ = "up"
+        Case Chr$(0) + "P": movedown: checkbomb: dirc$ = "down"
+        Case "s": switchsound
+        Case Chr$(13): shoot
+        Case Chr$(27): Exit Do
+        Case Else: GoTo redo
+    End Select
+Loop
 
-CHAIN "sphmenu.bas"
-END
+Chain "sphmenu.bas"
+End
 exub:
 exable% = 1
-RETURN
+Return
 
-SUB checkbomb
+Sub checkbomb
 
-FOR bomnum = 1 TO 20
-    IF (ABS(xguy - xbomb(bomnum)) < 15) AND (ABS(yguy - ybomb(bomnum)) < 13) THEN
-       explode
-    ELSE
-    END IF
-NEXT bomnum
+    For bomnum = 1 To 20
+        If (Abs(xguy - xbomb(bomnum)) < 15) And (Abs(yguy - ybomb(bomnum)) < 13) Then
+            explode
+        Else
+        End If
+    Next bomnum
 
-IF (bombsleft < 1) THEN
-   win
-ELSE
-END IF
+    If (bombsleft < 1) Then
+        win
+    Else
+    End If
 
-END SUB
+End Sub
 
-SUB delay
-ON TIMER(3) GOSUB exub
-TIMER ON
-exable% = 0
-DO
-LOOP UNTIL exable% = 1
-END SUB
+Sub delay
+    On Timer(3) GoSub exub
+    Timer On
+    exable% = 0
+    Do
+    Loop Until exable% = 1
+End Sub
 
-SUB drawbombs
-FOR bomnum = 1 TO 20
-    CIRCLE (xbomb(bomnum), ybomb(bomnum)), 2, 113
-    CIRCLE (xbomb(bomnum), ybomb(bomnum)), 4, 113
-    CIRCLE (xbomb(bomnum), ybomb(bomnum)), 3, 4
-NEXT bomnum
-END SUB
+Sub drawbombs
+    For bomnum = 1 To 20
+        Circle (xbomb(bomnum), ybomb(bomnum)), 2, 113
+        Circle (xbomb(bomnum), ybomb(bomnum)), 4, 113
+        Circle (xbomb(bomnum), ybomb(bomnum)), 3, 4
+    Next bomnum
+End Sub
 
-SUB drawguy
+Sub drawguy
 
-outness = 10
-outadd = .1
-'LINE (xguy - 11, yguy - 11)-(xguy + 11, yguy + 11), 16, BF
-CIRCLE (xguy, yguy), 11, 16
-drawbombs
-FOR i = 16 TO 31 STEP 3
-    CIRCLE (xguy, yguy), INT(outness), i
-    PAINT (xguy, yguy), i
-    outness = outness - outadd
-    outadd = outadd + .3
-NEXT i
+    outness = 10
+    outadd = .1
+    'LINE (xguy - 11, yguy - 11)-(xguy + 11, yguy + 11), 16, BF
+    Circle (xguy, yguy), 11, 16
+    drawbombs
+    For i = 16 To 31 Step 3
+        Circle (xguy, yguy), Int(outness), i
+        Paint (xguy, yguy), i
+        outness = outness - outadd
+        outadd = outadd + .3
+    Next i
 
-LOCATE 1, 20
-PRINT lives; " lives left"
+    Locate 1, 20
+    Print lives; " lives left"
 
-END SUB
+End Sub
 
-SUB explode
+Sub explode
 
-'explode guy
-colour = 40
-FOR i = 1 TO 20
-     SELECT CASE sound$
-          CASE "1": SOUND 100 - i, .3
-          CASE "0": SOUND 24000, .3
-     END SELECT
-    CIRCLE (xguy, yguy), i, INT(colour)
-    colour = colour + .2
-NEXT i
-'erase explosion
-FOR i = 20 TO 1 STEP -1
-     SELECT CASE sound$
-          CASE "1": SOUND 80 - i, .3
-          CASE "0": SOUND 24000, .3
-     END SELECT
-    CIRCLE (xguy, yguy), i, 16   'color 16 is black
-NEXT i
+    'explode guy
+    colour = 40
+    For i = 1 To 20
+        Select Case sound$
+            Case "1": Sound 100 - i, .3
+            Case "0": Sound 24000, .3
+        End Select
+        Circle (xguy, yguy), i, Int(colour)
+        colour = colour + .2
+    Next i
+    'erase explosion
+    For i = 20 To 1 Step -1
+        Select Case sound$
+            Case "1": Sound 80 - i, .3
+            Case "0": Sound 24000, .3
+        End Select
+        Circle (xguy, yguy), i, 16 'color 16 is black
+    Next i
 
 
-'lose life and if out of lives you lose
-lives = lives - 1
-IF (lives < 1) THEN
-   SCREEN 0
-   COLOR 20
-   LOCATE 10, 15
-   PRINT "YOU LOSE"
-     SELECT CASE sound$
-          CASE "1": SOUND 80, 10:  SOUND 60, 15
-          CASE "0": SOUND 24000, 10:  SOUND 20000, 15
-     END SELECT
-     COLOR 15
-     i = 0
-     LOCATE 2, 1
-     PRINT watime
-     delay
-   CHAIN "sphmenu.bas"
-ELSE
-END IF
+    'lose life and if out of lives you lose
+    lives = lives - 1
+    If (lives < 1) Then
+        Screen 0
+        Color 20
+        Locate 10, 15
+        Print "YOU LOSE"
+        Select Case sound$
+            Case "1": Sound 80, 10: Sound 60, 15
+            Case "0": Sound 24000, 10: Sound 20000, 15
+        End Select
+        Color 15
+        i = 0
+        Locate 2, 1
+        Print watime
+        delay
+        Chain "sphmenu.bas"
+    Else
+    End If
 
-'move guy to starting place
-xguy = 10
-yguy = 10
-drawguy
+    'move guy to starting place
+    xguy = 10
+    yguy = 10
+    drawguy
 
-END SUB
+End Sub
 
-SUB laybombs
-FOR bomnum = 1 TO 20
-    xbomb(bomnum) = INT((RND * 224) + 25)
-    ybomb(bomnum) = INT((RND * 174) + 25)
-NEXT bomnum
+Sub laybombs
+    For bomnum = 1 To 20
+        xbomb(bomnum) = Int((Rnd * 224) + 25)
+        ybomb(bomnum) = Int((Rnd * 174) + 25)
+    Next bomnum
 
-FOR i = 1 TO 20
-    FOR radius = 1 TO 3
-     SELECT CASE sound$
-          CASE "1": SOUND 60 + (radius * 3), .3
-          CASE "0": SOUND 20000, .3
-     END SELECT
+    For i = 1 To 20
+        For radius = 1 To 3
+            Select Case sound$
+                Case "1": Sound 60 + (radius * 3), .3
+                Case "0": Sound 20000, .3
+            End Select
        
-       CIRCLE (xbomb(i), ybomb(i)), radius, 4
-       CIRCLE (xbomb(i), ybomb(i)), radius - 1, 16
-    NEXT radius
-       CIRCLE (xbomb(i), ybomb(i)), 2, 113
-       CIRCLE (xbomb(i), ybomb(i)), 4, 113
-       CIRCLE (xbomb(i), ybomb(i)), 3, 4
-NEXT i
+            Circle (xbomb(i), ybomb(i)), radius, 4
+            Circle (xbomb(i), ybomb(i)), radius - 1, 16
+        Next radius
+        Circle (xbomb(i), ybomb(i)), 2, 113
+        Circle (xbomb(i), ybomb(i)), 4, 113
+        Circle (xbomb(i), ybomb(i)), 3, 4
+    Next i
 
-END SUB
+End Sub
 
-SUB movedown
-yguy = yguy + 1: IF yguy > 189 THEN yguy = 189
-drawguy
-END SUB
+Sub movedown
+    yguy = yguy + 1: If yguy > 189 Then yguy = 189
+    drawguy
+End Sub
 
-SUB moveleft
-xguy = xguy - 1: IF xguy < 10 THEN xguy = 10
-drawguy
-END SUB
+Sub moveleft
+    xguy = xguy - 1: If xguy < 10 Then xguy = 10
+    drawguy
+End Sub
 
-SUB moveright
-xguy = xguy + 1: IF xguy > 309 THEN xguy = 309
-drawguy
-END SUB
+Sub moveright
+    xguy = xguy + 1: If xguy > 309 Then xguy = 309
+    drawguy
+End Sub
 
-SUB moveup
-yguy = yguy - 1: IF yguy < 10 THEN yguy = 10
-drawguy
-END SUB
+Sub moveup
+    yguy = yguy - 1: If yguy < 10 Then yguy = 10
+    drawguy
+End Sub
 
-SUB setbombs
-   RANDOMIZE TIMER
-   FOR bomnum = 1 TO 20
-       xbomb(bomnum) = INT((RND * 224) + 25)
-       ybomb(bomnum) = INT((RND * 174) + 25)
-   NEXT bomnum
-END SUB
+Sub setbombs
+    Randomize Timer
+    For bomnum = 1 To 20
+        xbomb(bomnum) = Int((Rnd * 224) + 25)
+        ybomb(bomnum) = Int((Rnd * 174) + 25)
+    Next bomnum
+End Sub
 
-SUB shoot
+Sub shoot
 
-FOR locbomb = 1 TO 20
-    IF (ABS(xguy - xbomb(locbomb)) < 20) AND (ABS(yguy - ybomb(locbomb)) < 20) THEN
-       LINE (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 4
-       FOR i = 1 TO 20
-          SELECT CASE sound$
-               CASE "1": SOUND 100 + i, .3
-               CASE "0": SOUND 24000, .3
-          END SELECT
-       NEXT i
-       LINE (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 16
-       FOR i = 1 TO 20
-           CIRCLE (xbomb(locbomb), ybomb(locbomb)), i, 4
-           SELECT CASE sound$
-               CASE "1": SOUND 100 + i, .3
-               CASE "0": SOUND 24000, .3
-           END SELECT
+    For locbomb = 1 To 20
+        If (Abs(xguy - xbomb(locbomb)) < 20) And (Abs(yguy - ybomb(locbomb)) < 20) Then
+            Line (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 4
+            For i = 1 To 20
+                Select Case sound$
+                    Case "1": Sound 100 + i, .3
+                    Case "0": Sound 24000, .3
+                End Select
+            Next i
+            Line (xguy, yguy)-(xbomb(locbomb), ybomb(locbomb)), 16
+            For i = 1 To 20
+                Circle (xbomb(locbomb), ybomb(locbomb)), i, 4
+                Select Case sound$
+                    Case "1": Sound 100 + i, .3
+                    Case "0": Sound 24000, .3
+                End Select
            
-       NEXT i
+            Next i
    
-       FOR i = 20 TO 1 STEP -1
-           CIRCLE (xbomb(locbomb), ybomb(locbomb)), i, 16
-           SELECT CASE sound$
-               CASE "1": SOUND 110 - i, .3
-               CASE "0": SOUND 24000, .3
-           END SELECT
-       NEXT i
-       xbomb(locbomb) = -10
-       ybomb(locbomb) = -10
-       bombsleft = bombsleft - 1
-       drawguy
-    ELSE
-    END IF
-NEXT locbomb
+            For i = 20 To 1 Step -1
+                Circle (xbomb(locbomb), ybomb(locbomb)), i, 16
+                Select Case sound$
+                    Case "1": Sound 110 - i, .3
+                    Case "0": Sound 24000, .3
+                End Select
+            Next i
+            xbomb(locbomb) = -10
+            ybomb(locbomb) = -10
+            bombsleft = bombsleft - 1
+            drawguy
+        Else
+        End If
+    Next locbomb
 
-END SUB
+End Sub
 
-SUB slide
-SELECT CASE sound$
-     CASE "1": SOUND 40, .3
-     CASE "0": SOUND 20000, .3
-END SELECT
+Sub slide
+    Select Case sound$
+        Case "1": Sound 40, .3
+        Case "0": Sound 20000, .3
+    End Select
 
-checkbomb
-IF dirc$ = "left" THEN
-     moveleft
-ELSEIF dirc$ = "right" THEN
-     moveright
-ELSEIF dirc$ = "up" THEN
-     moveup
-ELSEIF dirc$ = "down" THEN
-     movedown
-ELSE EXIT SUB
-END IF
-END SUB
+    checkbomb
+    If dirc$ = "left" Then
+        moveleft
+    ElseIf dirc$ = "right" Then
+        moveright
+    ElseIf dirc$ = "up" Then
+        moveup
+    ElseIf dirc$ = "down" Then
+        movedown
+    Else Exit Sub
+    End If
+End Sub
 
-SUB switchsound
+Sub switchsound
 
-OPEN "bsound.dat" FOR OUTPUT AS #1
-     SELECT CASE sound$
-          CASE "0": PRINT #1, "1": sound$ = "1"
-          CASE "1": PRINT #1, "0": sound$ = "0"
-     END SELECT
-CLOSE
+    Open "bsound.dat" For Output As #1
+    Select Case sound$
+        Case "0": Print #1, "1": sound$ = "1"
+        Case "1": Print #1, "0": sound$ = "0"
+    End Select
+    Close
 
-END SUB
+End Sub
 
-SUB win
+Sub win
 
-SCREEN 0
-COLOR 30
-LOCATE 10, 15
-PRINT "YOU  WIN"
+    Screen 0
+    Color 30
+    Locate 10, 15
+    Print "YOU  WIN"
 
-FOR i = 1 TO 10
-    FOR j = 700 TO 750
-        SOUND j + (i * 8), .05
-    NEXT j
-NEXT i
+    For i = 1 To 10
+        For j = 700 To 750
+            Sound j + (i * 8), .05
+        Next j
+    Next i
 
-soundpitch = 830
+    soundpitch = 830
 
-FOR k = 0 TO 20
-     SELECT CASE sound$
-          CASE "1": SOUND soundpitch, .2
-          CASE "0": SOUND 24000, .2
-     END SELECT
-    soundpitch = soundpitch + k
-NEXT k
+    For k = 0 To 20
+        Select Case sound$
+            Case "1": Sound soundpitch, .2
+            Case "0": Sound 24000, .2
+        End Select
+        soundpitch = soundpitch + k
+    Next k
 
-SLEEP 3
-CHAIN "sphmenu.bas"
-END SUB
+    Sleep 3
+    Chain "sphmenu.bas"
+End Sub
 

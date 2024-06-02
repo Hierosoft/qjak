@@ -2,130 +2,130 @@ DECLARE SUB winxpsetup ()
 DECLARE SUB win9598setup ()
 DECLARE SUB win31setup ()
 DECLARE SUB DOSSetup ()
-SCREEN 12
-COLOR 3
-LINE (0, 0)-(639, 32), 0, BF
-LINE (0, 0)-(639, 32), 10, B
-LOCATE 2, 33: COLOR 3: PRINT "S E T U P"
+Screen 12
+Color 3
+Line (0, 0)-(639, 32), 0, BF
+Line (0, 0)-(639, 32), 10, B
+Locate 2, 33: Color 3: Print "S E T U P"
 
-LOCATE 4, 1: PRINT "Press number key for your system: (press escape to cancel)"
-LOCATE 5, 1: PRINT " 1. Windows 2000/XP"
-LOCATE 6, 1: PRINT " 2. Win95, 98, or ME"
-LOCATE 7, 1: PRINT " 3. Win3.1 or other 3.x"
-LOCATE 8, 1: PRINT " 4. DOS"
-DO
-  OSnum$ = INKEY$
-  IF OSnum$ = "1" THEN EXIT DO
-  IF OSnum$ = "2" THEN EXIT DO
-  IF OSnum$ = "3" THEN EXIT DO
-  IF OSnum$ = "4" THEN EXIT DO
-  IF OSnum$ = CHR$(27) THEN EXIT DO
-LOOP
+Locate 4, 1: Print "Press number key for your system: (press escape to cancel)"
+Locate 5, 1: Print " 1. Windows 2000/XP"
+Locate 6, 1: Print " 2. Win95, 98, or ME"
+Locate 7, 1: Print " 3. Win3.1 or other 3.x"
+Locate 8, 1: Print " 4. DOS"
+Do
+    OSnum$ = InKey$
+    If OSnum$ = "1" Then Exit Do
+    If OSnum$ = "2" Then Exit Do
+    If OSnum$ = "3" Then Exit Do
+    If OSnum$ = "4" Then Exit Do
+    If OSnum$ = Chr$(27) Then Exit Do
+Loop
 
-IF OSnum$ = "1" THEN winxpsetup
-IF OSnum$ = "2" THEN win9598setup
-IF OSnum$ = "3" THEN win31setup
-IF OSnum$ = "4" THEN DOSSetup
-IF OSnum$ = CHR$(27) THEN GOTO ending
+If OSnum$ = "1" Then winxpsetup
+If OSnum$ = "2" Then win9598setup
+If OSnum$ = "3" Then win31setup
+If OSnum$ = "4" Then DOSSetup
+If OSnum$ = Chr$(27) Then GoTo ending
 
 
-LOCATE 20, 1: PRINT "-                                                                              -";
-LOCATE 21, 1: PRINT "-                       Finished...                                            -";
-LOCATE 22, 1: PRINT "-                                                                              -";
-SLEEP 1
+Locate 20, 1: Print "-                                                                              -";
+Locate 21, 1: Print "-                       Finished...                                            -";
+Locate 22, 1: Print "-                                                                              -";
+Sleep 1
 ending:
-LOCATE 20, 1: PRINT "-                                                                              -";
-LOCATE 21, 1: PRINT "-                                 enjoy                                        -";
-LOCATE 22, 1: PRINT "-                                                                              -";
-SLEEP 2
-SYSTEM
-END
+Locate 20, 1: Print "-                                                                              -";
+Locate 21, 1: Print "-                                 enjoy                                        -";
+Locate 22, 1: Print "-                                                                              -";
+Sleep 2
+System
+End
 
-SUB DOSSetup
-SHELL ("c:")
-SHELL ("cd\")
-SHELL ("md qjak")
-SHELL ("copy a:\256block.bas c:\qjak")
-SHELL ("copy a:\check.did c:\qjak")
-SHELL ("copy a:\jakdraw.bas c:\qjak")
-SHELL ("copy a:\jaksound.bas c:\qjak")
-SHELL ("copy a:\qbasic.exe c:\qjak")
-SHELL ("copy a:\qjakmenu.bas c:\qjak")
-SHELL ("copy a:\quiet.jak c:\qjak")
-SHELL ("copy a:\readme~1.txt c:\qjak")
-SHELL ("copy a:\smbreak.bas c:\qjak")
-SHELL ("copy a:\spheroid.bas c:\qjak")
-SHELL ("copy a:\sphmenu.bas c:\qjak")
-END SUB
+Sub DOSSetup
+    Shell ("c:")
+    Shell ("cd\")
+    Shell ("md qjak")
+    Shell ("copy a:\256block.bas c:\qjak")
+    Shell ("copy a:\check.did c:\qjak")
+    Shell ("copy a:\jakdraw.bas c:\qjak")
+    Shell ("copy a:\jaksound.bas c:\qjak")
+    Shell ("copy a:\qbasic.exe c:\qjak")
+    Shell ("copy a:\qjakmenu.bas c:\qjak")
+    Shell ("copy a:\quiet.jak c:\qjak")
+    Shell ("copy a:\readme~1.txt c:\qjak")
+    Shell ("copy a:\smbreak.bas c:\qjak")
+    Shell ("copy a:\spheroid.bas c:\qjak")
+    Shell ("copy a:\sphmenu.bas c:\qjak")
+End Sub
 
-SUB win31setup
-SHELL ("c:")
-SHELL ("cd\")
-SHELL ("md qjak")
-SHELL ("copy a:\256block.bas c:\qjak")
-SHELL ("copy a:\check.did c:\qjak")
-SHELL ("copy a:\jakdraw.bas c:\qjak")
-SHELL ("copy a:\jaksound.bas c:\qjak")
-SHELL ("copy a:\qbasic.exe c:\qjak")
-SHELL ("copy a:\qjakme~1.pif c:\qjak")
-SHELL ("copy a:\qjak.ico c:\qjak")
-SHELL ("copy a:\qjakmenu.bas c:\qjak")
-SHELL ("copy a:\quiet.jak c:\qjak")
-SHELL ("copy a:\readme~1.txt c:\qjak")
-SHELL ("copy a:\smbreak.bas c:\qjak")
-SHELL ("copy a:\smbrea~1.ico c:\qjak")
-SHELL ("copy a:\spheroid.bas c:\qjak")
-SHELL ("copy a:\sphmenu.bas c:\qjak")
-SHELL ("copy a:\superm~1.pif c:\qjak")
-SHELL ("copy a:\qjak.grp c:\windows")
-END SUB
+Sub win31setup
+    Shell ("c:")
+    Shell ("cd\")
+    Shell ("md qjak")
+    Shell ("copy a:\256block.bas c:\qjak")
+    Shell ("copy a:\check.did c:\qjak")
+    Shell ("copy a:\jakdraw.bas c:\qjak")
+    Shell ("copy a:\jaksound.bas c:\qjak")
+    Shell ("copy a:\qbasic.exe c:\qjak")
+    Shell ("copy a:\qjakme~1.pif c:\qjak")
+    Shell ("copy a:\qjak.ico c:\qjak")
+    Shell ("copy a:\qjakmenu.bas c:\qjak")
+    Shell ("copy a:\quiet.jak c:\qjak")
+    Shell ("copy a:\readme~1.txt c:\qjak")
+    Shell ("copy a:\smbreak.bas c:\qjak")
+    Shell ("copy a:\smbrea~1.ico c:\qjak")
+    Shell ("copy a:\spheroid.bas c:\qjak")
+    Shell ("copy a:\sphmenu.bas c:\qjak")
+    Shell ("copy a:\superm~1.pif c:\qjak")
+    Shell ("copy a:\qjak.grp c:\windows")
+End Sub
 
-SUB win9598setup
-SHELL ("c:")
-SHELL ("cd\")
-SHELL ("md qjak")
-SHELL ("cd\windows\desktop")
-SHELL ("md QJak")
-SHELL ("cd\")
-SHELL ("copy a:\256block.bas c:\qjak")
-SHELL ("copy a:\check.did c:\qjak")
-SHELL ("copy a:\jakdraw.bas c:\qjak")
-SHELL ("copy a:\jaksound.bas c:\qjak")
-SHELL ("copy a:\qbasic.exe c:\qjak")
-SHELL ("copy a:\qjakme~1.pif c:\windows\desktop\qjak")
-SHELL ("copy a:\qjak.ico c:\qjak")
-SHELL ("copy a:\qjakmenu.bas c:\qjak")
-SHELL ("copy a:\quiet.jak c:\qjak")
-SHELL ("copy a:\readme~1.txt c:\qjak")
-SHELL ("copy a:\smbreak.bas c:\qjak")
-SHELL ("copy a:\smbrea~1.ico c:\qjak")
-SHELL ("copy a:\spheroid.bas c:\qjak")
-SHELL ("copy a:\sphmenu.bas c:\qjak")
-SHELL ("copy a:\superm~1.pif c:\windows\desktop\qjak")
-END SUB
+Sub win9598setup
+    Shell ("c:")
+    Shell ("cd\")
+    Shell ("md qjak")
+    Shell ("cd\windows\desktop")
+    Shell ("md QJak")
+    Shell ("cd\")
+    Shell ("copy a:\256block.bas c:\qjak")
+    Shell ("copy a:\check.did c:\qjak")
+    Shell ("copy a:\jakdraw.bas c:\qjak")
+    Shell ("copy a:\jaksound.bas c:\qjak")
+    Shell ("copy a:\qbasic.exe c:\qjak")
+    Shell ("copy a:\qjakme~1.pif c:\windows\desktop\qjak")
+    Shell ("copy a:\qjak.ico c:\qjak")
+    Shell ("copy a:\qjakmenu.bas c:\qjak")
+    Shell ("copy a:\quiet.jak c:\qjak")
+    Shell ("copy a:\readme~1.txt c:\qjak")
+    Shell ("copy a:\smbreak.bas c:\qjak")
+    Shell ("copy a:\smbrea~1.ico c:\qjak")
+    Shell ("copy a:\spheroid.bas c:\qjak")
+    Shell ("copy a:\sphmenu.bas c:\qjak")
+    Shell ("copy a:\superm~1.pif c:\windows\desktop\qjak")
+End Sub
 
-SUB winxpsetup
-SHELL ("c:")
-SHELL ("cd\")
-SHELL ("md qjak")
-SHELL ("cd %HomePath%")
-SHELL ("desktop")
-SHELL ("md QJak")
-SHELL ("cd\")
-SHELL ("copy a:\256block.bas c:\qjak")
-SHELL ("copy a:\check.did c:\qjak")
-SHELL ("copy a:\jakdraw.bas c:\qjak")
-SHELL ("copy a:\jaksound.bas c:\qjak")
-SHELL ("copy a:\qbasic.exe c:\qjak")
-SHELL ("copy a:\qjakme~1.pif c:\windows\%HomePath%\qjak")
-SHELL ("copy a:\qjak.ico c:\qjak")
-SHELL ("copy a:\qjakmenu.bas c:\qjak")
-SHELL ("copy a:\quiet.jak c:\qjak")
-SHELL ("copy a:\readme~1.txt c:\qjak")
-SHELL ("copy a:\smbreak.bas c:\qjak")
-SHELL ("copy a:\smbrea~1.ico c:\qjak")
-SHELL ("copy a:\spheroid.bas c:\qjak")
-SHELL ("copy a:\sphmenu.bas c:\qjak")
-SHELL ("copy a:\superm~1.pif c:\%HomePath%\desktop\qjak")
-END SUB
+Sub winxpsetup
+    Shell ("c:")
+    Shell ("cd\")
+    Shell ("md qjak")
+    Shell ("cd %HomePath%")
+    Shell ("desktop")
+    Shell ("md QJak")
+    Shell ("cd\")
+    Shell ("copy a:\256block.bas c:\qjak")
+    Shell ("copy a:\check.did c:\qjak")
+    Shell ("copy a:\jakdraw.bas c:\qjak")
+    Shell ("copy a:\jaksound.bas c:\qjak")
+    Shell ("copy a:\qbasic.exe c:\qjak")
+    Shell ("copy a:\qjakme~1.pif c:\windows\%HomePath%\qjak")
+    Shell ("copy a:\qjak.ico c:\qjak")
+    Shell ("copy a:\qjakmenu.bas c:\qjak")
+    Shell ("copy a:\quiet.jak c:\qjak")
+    Shell ("copy a:\readme~1.txt c:\qjak")
+    Shell ("copy a:\smbreak.bas c:\qjak")
+    Shell ("copy a:\smbrea~1.ico c:\qjak")
+    Shell ("copy a:\spheroid.bas c:\qjak")
+    Shell ("copy a:\sphmenu.bas c:\qjak")
+    Shell ("copy a:\superm~1.pif c:\%HomePath%\desktop\qjak")
+End Sub
 
