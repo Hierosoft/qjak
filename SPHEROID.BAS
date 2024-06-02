@@ -35,7 +35,7 @@ SPLITHERE:
 progdir$ = Right$(progdir$, Len(progdir$) - (charnow)) 'this is correct since STARTS at right
 ChDir (progdir$)
 
-Open "bsound.dat" For Input As #1
+Open "BSOUND.DAT" For Input As #1
 Line Input #1, sound$
 Close
 
@@ -67,7 +67,7 @@ Do
     End Select
 Loop
 
-Chain "sphmenu.bas"
+Chain "SPHMENU.BAS"
 End
 exub:
 exable% = 1
@@ -162,7 +162,7 @@ Sub explode
         Locate 2, 1
         Print watime
         delay
-        Chain "sphmenu.bas"
+        Chain "SPHMENU.BAS"
     Else
     End If
 
@@ -283,7 +283,7 @@ End Sub
 
 Sub switchsound
 
-    Open "bsound.dat" For Output As #1
+    Open "BSOUND.DAT" For Output As #1
     Select Case sound$
         Case "0": Print #1, "1": sound$ = "1"
         Case "1": Print #1, "0": sound$ = "0"
@@ -316,6 +316,6 @@ Sub win
     Next k
 
     Sleep 3
-    Chain "sphmenu.bas"
+    Chain "SPHMENU.BAS"
 End Sub
 
